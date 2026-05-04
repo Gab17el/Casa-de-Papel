@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa de Papel0804 — Sistema</title>
+<style>
+:root{
+  --or:#FF6B35;--orl:#FFF0EB;--ord:#CC4A1A;
+  --gr:#0F6E56;--grl:#E1F5EE;
+  --rd:#A32D2D;--rdl:#FCEBEB;
+  --yl:#854F0B;--yll:#FAEEDA;
+  --bl:#185FA5;--bll:#E6F1FB;
+  --bg:#F7F5F2;--sf:#FFFFFF;--tx:#1A1A1A;--mu:#6B6B6B;--br:#E0DDD8;
+  --r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
+
+.hdr{background:var(--sf);border-bottom:1px solid var(--br);padding:.75rem 1.5rem;display:flex;align-items:center;gap:.875rem;position:sticky;top:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.logo{width:36px;height:36px;background:var(--or);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:600;line-height:1.2}
+.hdr p{font-size:11px;color:var(--mu)}
+.hdr-right{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.hbadge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;cursor:pointer}
+.hbadge.warn{background:var(--rdl);color:var(--rd)}
+.hbadge.ok{background:var(--grl);color:var(--gr)}
+
+.tabs{display:flex;gap:2px;padding:.875rem 1.5rem 0;background:var(--bg);border-bottom:1px solid var(--br);overflow-x:auto;flex-shrink:0}
+.tab{padding:8px 15px;border-radius:var(--rs) var(--rs) 0 0;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;border-bottom:none;color:var(--mu);background:transparent;white-space:nowrap;transition:all .12s}
+.tab.active{background:var(--sf);color:var(--or);border-color:var(--br);border-bottom-color:var(--sf);margin-bottom:-1px}
+.tab:hover:not(.active){background:rgba(0,0,0,.04);color:var(--tx)}
+
+.pg{display:none;padding:1.25rem 1.5rem;max-width:1240px;margin:0 auto}
+.pg.on{display:block}
+
+.card{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.875rem;gap:10px;flex-wrap:wrap}
+.ctitle{font-size:11px;font-weight:600;color:var(--mu);letter-spacing:.06em;text-transform:uppercase}
+.csub{font-size:12px;color:var(--mu);margin-top:2px}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.gcol{display:grid;grid-template-columns:350px 1fr;gap:1rem;align-items:start}
+
+.f{margin-bottom:10px}
+.f label{display:block;font-size:12px;color:var(--mu);margin-bottom:4px}
+input[type=text],input[type=number],select{width:100%;padding:7px 10px;border:1px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf);color:var(--tx);outline:none;transition:border .12s;font-family:inherit}
+input:focus,select:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,107,53,.1)}
+input[type=range]{padding:3px 0;border:none;width:100%;accent-color:var(--or)}
+textarea{width:100%;padding:7px 10px;border:1px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf);color:var(--tx);outline:none;font-family:inherit;resize:vertical}
+
+.btn{padding:7px 14px;border-radius:var(--rs);border:none;cursor:pointer;font-size:12px;font-weight:500;transition:all .12s;font-family:inherit;white-space:nowrap}
+.bp{background:var(--or);color:#fff}.bp:hover{background:var(--ord)}
+.bg{background:transparent;border:1px solid var(--br);color:var(--tx)}.bg:hover{background:var(--bg)}
+.bd{background:var(--rdl);color:var(--rd);border:1px solid #f7c1c1}.bd:hover{background:#f7c1c1}
+.bsm{padding:4px 10px;font-size:11px}
+.bgrn{background:var(--grl);color:var(--gr);border:1px solid #9FE1CB}
+
+.tog-g{display:flex;gap:4px;flex-wrap:wrap}
+.tog{padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--br);background:transparent;color:var(--mu);font-family:inherit;transition:all .12s}
+.tog.on{background:var(--orl);color:var(--ord);border-color:var(--or);font-weight:500}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1rem}
+.kpi{background:var(--bg);border-radius:var(--rs);padding:.75rem 1rem;text-align:center}
+.kpi-l{font-size:11px;color:var(--mu);margin-bottom:3px}
+.kpi-v{font-size:22px;font-weight:700;color:var(--tx);line-height:1.1}
+.kpi-v.r{color:var(--rd)}.kpi-v.g{color:var(--gr)}.kpi-v.y{color:var(--yl)}.kpi-v.o{color:var(--or)}
+
+/* TABLE */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:7px 9px;text-align:left;font-size:11px;font-weight:600;color:var(--mu);letter-spacing:.04em;text-transform:uppercase;border-bottom:1.5px solid var(--br);background:var(--bg);white-space:nowrap;position:sticky;top:0}
+td{padding:7px 9px;border-bottom:1px solid var(--br);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+
+/* Inline inputs in table */
+td input[type=text],td input[type=number]{
+  border:1px solid transparent;border-radius:6px;padding:4px 7px;font-size:12px;width:100%;
+  background:transparent;color:var(--tx);min-width:55px;
+}
+td input:hover{border-color:var(--br);background:var(--sf)}
+td input:focus{border-color:var(--or);background:var(--sf);box-shadow:0 0 0 2px rgba(255,107,53,.12)}
+
+/* Inline result cell */
+.res-cell{font-weight:600;font-size:13px}
+.res-cell.g{color:var(--gr)}.res-cell.r{color:var(--rd)}.res-cell.y{color:var(--yl)}
+.pct-bar{display:flex;align-items:center;gap:5px;min-width:100px}
+.bar-bg{flex:1;height:5px;background:var(--br);border-radius:3px;overflow:hidden}
+.bar-f{height:100%;border-radius:3px;transition:width .3s}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.br{background:var(--rdl);color:#791F1F}
+.by{background:var(--yll);color:#633806}
+.bg2{background:var(--grl);color:#085041}
+.bb{background:var(--bll);color:var(--bl)}
+.bo{background:var(--orl);color:var(--ord)}
+
+/* Result panel */
+.res-box{background:var(--bg);border-radius:var(--r);padding:1rem 1.1rem}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--br);font-size:13px}
+.rrow:last-child{border:none;font-size:15px;font-weight:600;padding-top:8px;margin-top:4px}
+.rl{color:var(--mu)}.rv{font-weight:500}
+.rv.g{color:var(--gr)}.rv.r{color:var(--rd)}.rv.y{color:var(--yl)}
+.met-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:.75rem}
+.met{background:var(--sf);border:1px solid var(--br);border-radius:var(--rs);padding:.625rem .875rem;text-align:center}
+.met-l{font-size:11px;color:var(--mu);margin-bottom:2px}
+.met-v{font-size:18px;font-weight:600}
+.met-v.g{color:var(--gr)}.met-v.r{color:var(--rd)}.met-v.y{color:var(--yl)}
+.tip{font-size:12px;color:var(--mu);padding:9px 12px;border-left:3px solid var(--or);background:var(--orl);border-radius:0 var(--rs) var(--rs) 0;margin-top:.75rem;line-height:1.6}
+.tip strong{color:var(--ord)}
+
+/* Add row */
+.add-row{background:var(--orl);border-radius:var(--rs);padding:.75rem 1rem;margin-top:.875rem;display:none}
+.add-row-title{font-size:12px;font-weight:600;color:var(--ord);margin-bottom:8px}
+
+/* Compare */
+.cmp{width:100%;border-collapse:collapse;font-size:13px}
+.cmp th,.cmp td{padding:8px 12px;border:1px solid var(--br);text-align:center}
+.cmp th{background:var(--bg);font-weight:600}
+.cmp td:first-child{text-align:left;font-weight:500}
+.cmp .best{background:var(--grl);color:var(--gr);font-weight:600}
+
+/* Strategy */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.sc{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:1.1rem}
+.si{width:36px;height:36px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:9px}
+.st{font-size:13px;font-weight:600;margin-bottom:6px}
+.sb{font-size:12px;color:var(--mu);line-height:1.7}
+.sb li{margin-left:14px;margin-bottom:2px}
+.hl{background:var(--orl);border-left:4px solid var(--or);border-radius:0 var(--rs) var(--rs) 0;padding:.875rem 1.1rem;margin-bottom:1rem}
+.hl strong{color:var(--ord);display:block;font-size:14px;margin-bottom:4px}
+.hl p{font-size:12px;color:var(--mu);line-height:1.6}
+
+/* Compras */
+.forn-block{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:1rem;margin-bottom:.875rem}
+.forn-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:6px}
+.forn-title{font-size:13px;font-weight:600}
+.forn-total{font-size:13px;color:var(--or);font-weight:600}
+.comp-item{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:var(--rs);margin-bottom:4px;font-size:12px;flex-wrap:wrap;gap:6px}
+.comp-item.urg{background:var(--rdl);border-left:3px solid var(--rd)}
+.comp-item.norm{background:var(--yll);border-left:3px solid #EF9F27}
+.comp-item.ok{background:var(--grl);border-left:3px solid var(--gr)}
+.comp-info{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.comp-nome{font-weight:600;font-size:13px}
+
+/* Search */
+.sw{position:relative;margin-bottom:.75rem}
+.sw input{padding-left:30px}
+.si2{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--mu);pointer-events:none;font-size:14px}
+
+@media(max-width:700px){
+  .gcol{grid-template-columns:1fr}
+  .sg{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  .pg{padding:.875rem .875rem}
+  .hdr{padding:.625rem .875rem}
+  .tabs{padding:.625rem .875rem 0}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">CP</div>
+  <div>
+    <h1>Casa de Papel0804</h1>
+    <p>Sistema de Gestão — Shopee · Mercado Livre · TikTok</p>
+  </div>
+  <div class="hdr-right" id="hdrRight"></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="go('dashboard',this)">📊 Dashboard</button>
+  <button class="tab" onclick="go('calc',this)">🧮 Calculadora</button>
+  <button class="tab" onclick="go('catalogo',this)">📦 Catálogo</button>
+  <button class="tab" onclick="go('estoque',this)">📋 Estoque</button>
+  <button class="tab" onclick="go('compras',this)">🛒 Compras</button>
+  <button class="tab" onclick="go('diag',this)">🔍 Diagnóstico</button>
+  <button class="tab" onclick="go('comparar',this)">⚖️ Comparar</button>
+  <button class="tab" onclick="go('estrategia',this)">🚀 Estratégia</button>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="pg-dashboard" class="pg on">
+  <div class="kpis" id="dKpis"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-hdr"><div><div class="ctitle">⚠️ Preços com prejuízo</div><div class="csub">Corrija agora para não perder dinheiro</div></div></div>
+      <div id="dPrej"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div><div class="ctitle">📦 Estoque crítico</div><div class="csub">Precisa repor em breve</div></div>
+      <button class="btn bp bsm" onclick="go('compras',document.querySelector('.tab:nth-child(5)'))">Ver lista →</button></div>
+      <div id="dEst"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="ctitle">🏆 Top produtos por margem (Shopee)</div></div>
+    <div id="dTop"></div>
+  </div>
+</div>
+
+<!-- ══ CALCULADORA ══ -->
+<div id="pg-calc" class="pg">
+  <div class="gcol">
+    <div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:.875rem">Plataforma</div>
+        <div class="tog-g" style="margin-bottom:1rem">
+          <button class="tog on" onclick="setPlat('shopee',this)">🛍️ Shopee</button>
+          <button class="tog" onclick="setPlat('ml',this)">🛒 Mercado Livre</button>
+          <button class="tog" onclick="setPlat('tiktok',this)">🎵 TikTok</button>
+        </div>
+        <div class="f">
+          <label>Carregar produto do catálogo</label>
+          <select id="cSel" onchange="loadProd()"><option value="">— selecionar —</option></select>
+        </div>
+        <div class="g2">
+          <div class="f"><label>Custo do produto (R$)</label><input type="number" id="cCusto" placeholder="0,00" min="0" step="0.01" oninput="calc()"></div>
+          <div class="f"><label>Preço de venda (R$)</label><input type="number" id="cPreco" placeholder="0,00" min="0" step="0.01" oninput="calc()"></div>
+        </div>
+        <div class="f"><label>Embalagem (R$)</label><input type="number" id="cEmb" value="0.50" min="0" step="0.01" oninput="calc()"></div>
+      </div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:.875rem">Configurações</div>
+        <div class="f" id="fFreteField">
+          <label>Tipo de frete</label>
+          <div class="tog-g" id="togFrete">
+            <button class="tog on" onclick="setOpt('frete','gratis',this)">Frete grátis (−20%)</button>
+            <button class="tog" onclick="setOpt('frete','pago',this)">Pago pelo comprador (−14%)</button>
+          </div>
+        </div>
+        <div class="f" id="fAnuncio" style="display:none">
+          <label>Tipo de anúncio — Mercado Livre</label>
+          <div class="tog-g" id="togAnuncio">
+            <button class="tog on" onclick="setOpt('anuncio','classico',this)">Clássico (11,5%)</button>
+            <button class="tog" onclick="setOpt('anuncio','premium',this)">Premium (16,5%)</button>
+          </div>
+        </div>
+        <div class="f">
+          <label>Investimento em Ads</label>
+          <div class="tog-g" id="togAds">
+            <button class="tog" onclick="setAds(0,this)">Sem ads</button>
+            <button class="tog on" onclick="setAds(10,this)">10%</button>
+            <button class="tog" onclick="setAds(12,this)">12%</button>
+            <button class="tog" onclick="setAds(15,this)">15%</button>
+            <button class="tog" onclick="setAds(20,this)">20%</button>
+          </div>
+        </div>
+        <div class="f">
+          <label>Margem desejada: <strong id="mLbl" style="color:var(--or)">15%</strong></label>
+          <input type="range" id="mSlider" min="5" max="40" value="15" step="1" oninput="document.getElementById('mLbl').textContent=this.value+'%';calc()">
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:.75rem">Resultado por pedido</div>
+        <div id="cRes"><div style="color:var(--mu);text-align:center;padding:2rem;font-size:13px">Preencha o custo e o preço de venda.</div></div>
+      </div>
+      <div class="card">
+        <div class="ctitle" style="margin-bottom:.75rem">Preço mínimo para atingir a margem</div>
+        <div id="cSug"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CATÁLOGO ══ -->
+<div id="pg-catalogo" class="pg">
+  <div class="card">
+    <div class="card-hdr">
+      <div><div class="ctitle">Catálogo de produtos</div><div class="csub" id="catCount"></div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn bg bsm" onclick="expCSV()">⬇ CSV</button>
+        <button class="btn bg bsm" onclick="resetPrecos()">🔄 Resetar preços</button>
+        <button class="btn bp bsm" onclick="togAdd('catAdd')">+ Novo produto</button>
+      </div>
+    </div>
+
+    <!-- FORMULÁRIO NOVO PRODUTO -->
+    <div class="add-row" id="catAdd">
+      <div class="add-row-title">Novo produto</div>
+      <div class="g2" style="margin-bottom:7px">
+        <div class="f"><label>Nome</label><input type="text" id="aNome" placeholder="Nome do produto"></div>
+        <div class="f"><label>Fornecedor</label><input type="text" id="aForn" placeholder="Ex: Busca Busca"></div>
+      </div>
+      <div class="g4" style="margin-bottom:7px">
+        <div class="f"><label>Custo (R$)</label><input type="number" id="aCusto" step="0.01" min="0" placeholder="0,00" oninput="autoPrecos()"></div>
+        <div class="f"><label>Preço Shopee</label><input type="number" id="aShopee" step="0.01" min="0" placeholder="auto"></div>
+        <div class="f"><label>Preço ML</label><input type="number" id="aML" step="0.01" min="0" placeholder="auto"></div>
+        <div class="f"><label>Preço TikTok</label><input type="number" id="aTT" step="0.01" min="0" placeholder="auto"></div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn bg bsm" onclick="togAdd('catAdd')">Cancelar</button>
+        <button class="btn bp bsm" onclick="addProd()">Salvar produto</button>
+      </div>
+    </div>
+
+    <div class="sw"><span class="si2">🔍</span><input type="text" id="catQ" placeholder="Buscar produto ou fornecedor..." oninput="renderCat()"></div>
+    <div class="tw">
+      <table id="catTable">
+        <thead><tr>
+          <th style="min-width:180px">Produto</th>
+          <th>Fornecedor</th>
+          <th>Custo</th>
+          <th>Preço Shopee</th><th>Margem S.</th>
+          <th>Preço ML</th><th>Margem ML</th>
+          <th>Preço TikTok</th><th>Margem TT</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="catBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ESTOQUE ══ -->
+<div id="pg-estoque" class="pg">
+  <div class="card">
+    <div class="card-hdr">
+      <div><div class="ctitle">Controle de estoque</div><div class="csub">Edite qualquer campo — resultados atualizam automaticamente</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg bsm" onclick="expEstoque()">⬇ Exportar</button>
+        <button class="btn bp bsm" onclick="go('compras',document.querySelector('.tab:nth-child(5)'))">Lista de compras →</button>
+      </div>
+    </div>
+    <div class="kpis" id="estKpis"></div>
+    <div class="sw"><span class="si2">🔍</span><input type="text" id="estQ" placeholder="Buscar produto..." oninput="renderEst()"></div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th style="min-width:170px">Produto</th>
+          <th>Fornecedor</th>
+          <th>Custo unit.</th>
+          <th title="Quantidade que você tem agora">Qtd atual</th>
+          <th title="Abaixo disso precisa repor">Estoque mínimo</th>
+          <th title="Quantidade ideal para comprar de uma vez">Qtd ideal p/ comprar</th>
+          <th title="Último preço pago por unidade ao fornecedor">Último preço compra</th>
+          <th>Projeção gasto</th>
+          <th>Status</th>
+        </tr></thead>
+        <tbody id="estBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPRAS ══ -->
+<div id="pg-compras" class="pg">
+  <div class="card">
+    <div class="card-hdr">
+      <div><div class="ctitle">Lista de compras — o que repor</div><div class="csub">Gerada automaticamente pelo estoque</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg bsm" onclick="expCompras()">⬇ CSV</button>
+        <button class="btn bg bsm" onclick="window.print()">🖨️ Imprimir</button>
+      </div>
+    </div>
+    <div class="kpis" id="compKpis"></div>
+    <div id="compList"></div>
+  </div>
+</div>
+
+<!-- ══ DIAGNÓSTICO ══ -->
+<div id="pg-diag" class="pg">
+  <div class="card">
+    <div class="card-hdr">
+      <div><div class="ctitle">Diagnóstico de preços reais</div><div class="csub">Adicione o preço atual da loja e veja a margem real</div></div>
+      <button class="btn bp bsm" onclick="togAdd('diagAdd')">+ Adicionar produto</button>
+    </div>
+
+    <div class="add-row" id="diagAdd">
+      <div class="add-row-title">Adicionar produto para análise</div>
+      <div class="g3" style="margin-bottom:7px">
+        <div class="f"><label>Nome do produto</label><input type="text" id="dNome" placeholder="Como aparece na Shopee"></div>
+        <div class="f"><label>Preço atual na loja (R$)</label><input type="number" id="dPreco" step="0.01" min="0" placeholder="0,00"></div>
+        <div class="f"><label>Custo do produto (R$)</label><input type="number" id="dCusto" step="0.01" min="0" placeholder="0,00"></div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn bg bsm" onclick="togAdd('diagAdd')">Cancelar</button>
+        <button class="btn bp bsm" onclick="addDiag()">Analisar</button>
+      </div>
+    </div>
+
+    <div class="kpis" id="diagKpis"></div>
+    <div class="tog-g" style="margin-bottom:.75rem" id="diagFil">
+      <button class="tog on" onclick="setDiagF('all',this)">Todos</button>
+      <button class="tog" onclick="setDiagF('prej',this)">Com prejuízo</button>
+      <button class="tog" onclick="setDiagF('low',this)">Margem baixa</button>
+      <button class="tog" onclick="setDiagF('ok',this)">Saudável (+15%)</button>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th style="min-width:180px">Produto</th>
+          <th>Preço atual</th>
+          <th>Custo</th>
+          <th>Lucro/pedido</th>
+          <th style="min-width:130px">Margem atual</th>
+          <th>Status</th>
+          <th>Preço correto</th>
+          <th>Precisa ajustar</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="diagBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPARAR ══ -->
+<div id="pg-comparar" class="pg">
+  <div class="card">
+    <div class="ctitle" style="margin-bottom:.875rem">Taxas por plataforma</div>
+    <div class="tw"><table class="cmp">
+      <thead><tr><th style="text-align:left">Taxa/condição</th><th>🛍️ Shopee</th><th>🛒 Mercado Livre</th><th>🎵 TikTok</th></tr></thead>
+      <tbody>
+        <tr><td>Comissão padrão</td><td>14%</td><td class="best">11,5% (Clássico)</td><td>12%</td></tr>
+        <tr><td>Comissão c/ frete grátis</td><td>20%</td><td>16,5% (Premium)</td><td class="best">12%</td></tr>
+        <tr><td>Taxa fixa por pedido</td><td>R$4,00</td><td>R$6,25–6,75</td><td class="best">R$0</td></tr>
+        <tr><td>Frete subsidiado</td><td>Sim (+6%)</td><td>Não padrão</td><td class="best">Sim</td></tr>
+        <tr><td>Alcance orgânico</td><td>Médio</td><td>Alto (busca)</td><td class="best">Alto (vídeo)</td></tr>
+        <tr><td>Ticket médio ideal</td><td>R$15–60</td><td class="best">R$30–150</td><td>R$15–80</td></tr>
+        <tr><td>Facilidade inicial</td><td class="best">Fácil</td><td>Médio</td><td>Médio</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="ctitle" style="margin-bottom:.875rem">Simulação — mesmo produto nas 3 plataformas</div>
+    <div class="g2" style="max-width:380px;margin-bottom:1rem">
+      <div class="f"><label>Custo (R$)</label><input type="number" id="cpCusto" value="10" step="0.01" oninput="calcCmp()"></div>
+      <div class="f"><label>Preço de venda (R$)</label><input type="number" id="cpPreco" value="29.90" step="0.01" oninput="calcCmp()"></div>
+    </div>
+    <div id="cpRes"></div>
+  </div>
+</div>
+
+<!-- ══ ESTRATÉGIA ══ -->
+<div id="pg-estrategia" class="pg">
+  <div class="hl">
+    <strong>🎯 Diagnóstico atual — Casa de Papel0804</strong>
+    <p>ROAS 9,65 · R$310/mês em ads · 155 itens vendidos. Loja performando bem — o que falta é escala e precificação correta.</p>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-l">ROAS atual</div><div class="kpi-v o">9,65</div></div>
+    <div class="kpi"><div class="kpi-l">Vendas/mês ads</div><div class="kpi-v">R$3k</div></div>
+    <div class="kpi"><div class="kpi-l">Itens vendidos</div><div class="kpi-v">155</div></div>
+    <div class="kpi"><div class="kpi-l">Ads investidos</div><div class="kpi-v">R$310</div></div>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="si" style="background:var(--orl)">💰</div><div class="st">1. Precificação correta</div><div class="sb">Fórmula: Preço − 20% − R$4 − custo − ads = lucro. Lucro mínimo = 15% do preço.<ul style="margin-top:5px"><li>Use a calculadora para cada produto</li><li>Custo R$5–10 → venda mín. R$18–28</li><li>Custo R$15–25 → venda mín. R$45–70</li><li>Revise preços a cada 30 dias</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:var(--orl)">📣</div><div class="st">2. Reinvista em ads</div><div class="sb">Com ROAS 9,65 cada R$1 vira R$9,65. O dinheiro que entra na carteira Shopee vai direto em mais ads.<ul style="margin-top:5px"><li>Suba orçamento de R$12 → R$50–100</li><li>Meta: R$1k/mês ads → R$9–10k vendas</li><li>Priorize Presilhas (ROAS 25,57) e Tiaras (18,47)</li><li>Nunca pause anúncio que vende</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:var(--grl)">🏗️</div><div class="st">3. Kits aumentam o ticket</div><div class="sb">5 canetas por R$45 em vez de 1 por R$12. O frete e comissão são os mesmos, mas o lucro é 5x maior.<ul style="margin-top:5px"><li>Kit 5 canetas + apontador + borracha → R$38–45</li><li>Kit presente temático (HK, Capivara) → R$55–65</li><li>Kits geram mais avaliações positivas</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:#EEF2FF">🎥</div><div class="st">4. TikTok Shop</div><div class="sb">Público jovem/feminino = exatamente quem usa TikTok. Menor comissão que Shopee c/ frete grátis.<ul style="margin-top:5px"><li>Vídeos: "O que comprei por R$X" (15–30s)</li><li>Lives para vender em tempo real</li><li>Comissão 12% vs 20% na Shopee</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:var(--yll)">📅</div><div class="st">5. Sazonalidade</div><div class="sb"><ul style="margin-top:5px"><li><strong>Jan–Fev:</strong> Volta às aulas — kits escolares</li><li><strong>Jun:</strong> Dia dos Namorados</li><li><strong>Jul:</strong> 2º semestre escolar</li><li><strong>Nov:</strong> Black Friday (desconto c/ margem)</li><li><strong>Dez:</strong> Natal — kits presente</li><li>Prepare estoque 30 dias antes</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:var(--grl)">⭐</div><div class="st">6. Avaliações e reputação</div><div class="sb">A Shopee exibe primeiro quem tem mais avaliações 5★.<ul style="margin-top:5px"><li>Bilhetinho escrito à mão em cada pedido</li><li>Embale com capricho — gera unboxing de cliente</li><li>Responda perguntas em menos de 1h</li><li>Cupom R$2 para quem avaliar com foto</li><li>Meta: 4,8+ de média</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:#EEF2FF">🛒</div><div class="st">7. Mercado Livre</div><div class="sb">Ideal para produtos acima de R$30 — público pesquisa antes de comprar.<ul style="margin-top:5px"><li>Título: marca + material + tema + público</li><li>Fotos fundo branco + foto de uso</li><li>Comissão Clássico 11,5% — menor que Shopee c/ frete</li><li>MercadoEnvios facilita a logística</li></ul></div></div>
+    <div class="sc"><div class="si" style="background:var(--yll)">📈</div><div class="st">8. Metas de escala</div><div class="sb"><ul style="margin-top:5px"><li><strong>Mês 1:</strong> Dobrar ads → R$620 · meta R$6k</li><li><strong>Mês 2:</strong> TikTok + ML → +30% receita</li><li><strong>Mês 3:</strong> 3 kits exclusivos R$50–80</li><li><strong>Mês 4:</strong> Ads R$2k → meta R$18k</li><li><strong>Mês 6:</strong> Ads R$3k → meta R$30k</li></ul></div></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONSTANTES
+// ══════════════════════════════════════════
+const CFG=0.20, CSG=0.14, CML_C=0.115, CML_P=0.165, CTT=0.12;
+const TS=4, EMB=0.50, ADS_DEF=0.10;
+
+// ══════════════════════════════════════════
+// DADOS BASE (preços com 15% margem mínima)
+// ══════════════════════════════════════════
+const BASE=[
+  {id:1,nome:'Caneta Capivara Kakabala',custo:5,forn:'Busca Busca',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:2,nome:'Lápis Infinito',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:3,nome:'Caneta Capivara 6 cores',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:4,nome:'Caderno Inteligente Pequeno Capivara',custo:12,forn:'Busca Busca',shopee:30.90,ml:29.90,tiktok:19.90},
+  {id:5,nome:'Pasta Zipper Capivara',custo:5,forn:'Busca Busca',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:6,nome:'Diamond Painting (grande)',custo:12,forn:'Busca Busca',shopee:30.90,ml:29.90,tiktok:19.90},
+  {id:7,nome:'Adesivo',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:8,nome:'Bobbie Goods',custo:5,forn:'Busca Busca',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:9,nome:'Caderno Pequeno Capivara',custo:9,forn:'Busca Busca',shopee:24.90,ml:24.90,tiktok:15.90},
+  {id:10,nome:'Bloco anotação Capivara',custo:7,forn:'Busca Busca',shopee:21.90,ml:21.90,tiktok:12.90},
+  {id:11,nome:'Fita Corretiva',custo:5,forn:'Busca Busca',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:12,nome:'Marca texto Patinha',custo:10,forn:'Busca Busca',shopee:26.90,ml:26.90,tiktok:16.90},
+  {id:13,nome:'Bloquinho Capivara com Post-it',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:14,nome:'Kit Carimbo Capy',custo:8,forn:'Busca Busca',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:15,nome:'Apontador Panda',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:16,nome:'Borracha Capivara',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:17,nome:'Apontador Capivara',custo:7,forn:'Busca Busca',shopee:21.90,ml:21.90,tiktok:12.90},
+  {id:18,nome:'Estojo Porta objetos Capivara',custo:15,forn:'Busca Busca',shopee:35.90,ml:34.90,tiktok:24.90},
+  {id:19,nome:'Apontador 3D Hello Kitty',custo:9,forn:'Busca Busca',shopee:24.90,ml:24.90,tiktok:15.90},
+  {id:20,nome:'Caneta Pompom Pata',custo:8,forn:'Busca Busca',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:21,nome:'Marca Texto Capivara 6 cores',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:22,nome:'Kit Carimbo Panda',custo:8,forn:'Busca Busca',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:23,nome:'Kit Mini Marca Texto Capivara',custo:7,forn:'Busca Busca',shopee:21.90,ml:21.90,tiktok:12.90},
+  {id:24,nome:'Kit Caneta Hidrográfica com 8',custo:21,forn:'Busca Busca',shopee:46.90,ml:43.90,tiktok:34.90},
+  {id:25,nome:'Bloquinho de anotações Capivara',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:26,nome:'Chaveiro Capivara LED',custo:9,forn:'Busca Busca',shopee:24.90,ml:24.90,tiktok:15.90},
+  {id:27,nome:'Marca texto Glitter 24 cores',custo:30,forn:'Busca Busca',shopee:62.90,ml:57.90,tiktok:48.90},
+  {id:28,nome:'Kit Canetinhas com 12',custo:10,forn:'Busca Busca',shopee:26.90,ml:26.90,tiktok:16.90},
+  {id:29,nome:'Borracha Caneta',custo:5,forn:'Busca Busca',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:30,nome:'Lápis Infinito Holográfico',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:31,nome:'Canetas Rosas',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:32,nome:'Caneta Patinha Cute',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:33,nome:'Borracha Carequinha',custo:4,forn:'Busca Busca',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:34,nome:'Kit Canetinha Glitter Pen 12 Cores',custo:11,forn:'Busca Busca',shopee:28.90,ml:28.90,tiktok:18.90},
+  {id:35,nome:'Mini Grampeador Capivara',custo:14,forn:'Busca Busca',shopee:33.90,ml:32.90,tiktok:23.90},
+  {id:36,nome:'Kit Caneta Art Marker 6 cores',custo:12,forn:'Busca Busca',shopee:30.90,ml:29.90,tiktok:19.90},
+  {id:37,nome:'Capivara Adesivo Tape 9 rolinhos',custo:6,forn:'Busca Busca',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:38,nome:'Kit Mini marca texto 4 cores',custo:7,forn:'Busca Busca',shopee:21.90,ml:21.90,tiktok:12.90},
+  {id:39,nome:'Caderno Inteligente',custo:22,forn:'Busca Busca',shopee:48.90,ml:45.90,tiktok:35.90},
+  {id:40,nome:'Caderno Inteligente mais Básico',custo:15,forn:'Busca Busca',shopee:35.90,ml:34.90,tiktok:24.90},
+  {id:41,nome:'Agenda Inteligente',custo:19,forn:'Busca Busca',shopee:42.90,ml:40.90,tiktok:31.90},
+  {id:42,nome:'Caneta Hidrográfica Ocean',custo:11,forn:'Busca Busca',shopee:28.90,ml:28.90,tiktok:18.90},
+  {id:43,nome:'Calendário Decorativo Mdf',custo:14,forn:'Busca Busca',shopee:33.90,ml:32.90,tiktok:23.90},
+  {id:44,nome:'Calendário Decorativo Permanente',custo:15,forn:'Busca Busca',shopee:35.90,ml:34.90,tiktok:24.90},
+  {id:45,nome:'Agenda Capivara Premium',custo:20,forn:'Busca Busca',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:46,nome:'Kit Canetinha Capivara 36 cores',custo:29,forn:'Busca Busca',shopee:61.90,ml:56.90,tiktok:46.90},
+  {id:47,nome:'Kit Lapis Preto Capivara 12 unid',custo:9,forn:'Busca Busca',shopee:24.90,ml:24.90,tiktok:15.90},
+  {id:48,nome:'Diamond Painting (pequeno)',custo:7,forn:'Busca Busca',shopee:21.90,ml:21.90,tiktok:12.90},
+  {id:49,nome:'Bolsa Capivara',custo:14,forn:'Busca Busca',shopee:33.90,ml:32.90,tiktok:23.90},
+  {id:50,nome:'Caneta Naruto premium',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:51,nome:'Caneta c/ Led Hello Kitty e Cia',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:52,nome:'Caderno Inteligente A5 roxo',custo:20,forn:'CX CY',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:53,nome:'Bloquinho Kuromi c/ divisórias',custo:8,forn:'CX CY',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:54,nome:'Agenda tipo fichário Kuromi',custo:20,forn:'CX CY',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:55,nome:'Bloquinho de notas bolsa',custo:6,forn:'CX CY',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:56,nome:'Estojo Hello Kitty',custo:6,forn:'CX CY',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:57,nome:'Caneta Hello Kitty (unid)',custo:0.6,forn:'CX CY',shopee:9.90,ml:11.90,tiktok:1.90},
+  {id:58,nome:'Apontador Kuromi',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:59,nome:'Caneta Kuromi 8 cores',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:60,nome:'Apontador Hello Kitty',custo:8,forn:'CX CY',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:61,nome:'Cola Hello Kitty',custo:6,forn:'CX CY',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:62,nome:'Borracha Cia Hello Kitty',custo:2,forn:'CX CY',shopee:11.90,ml:13.90,tiktok:4.90},
+  {id:63,nome:'Kit marcadores Hello Kit',custo:15,forn:'CX CY',shopee:35.90,ml:34.90,tiktok:24.90},
+  {id:64,nome:'Post-it Kuromi',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:65,nome:'Apontador Hello Kitty cabeça',custo:6,forn:'CX CY',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:66,nome:'Lápis infinito c/ borracha Hello Kitty',custo:4,forn:'CX CY',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:67,nome:'Presilha de Pantufa',custo:4.5,forn:'CX CY',shopee:16.90,ml:17.90,tiktok:8.90},
+  {id:68,nome:'Tiara Brasil',custo:3,forn:'CX CY',shopee:13.90,ml:15.90,tiktok:5.90},
+  {id:69,nome:'Caneta Patinhas',custo:1.6,forn:'CX CY',shopee:11.90,ml:13.90,tiktok:3.90},
+  {id:70,nome:'Caneta Gato',custo:1.6,forn:'CX CY',shopee:11.90,ml:13.90,tiktok:3.90},
+  {id:71,nome:'Caderno Capivara',custo:20,forn:'CX CY',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:72,nome:'Caderno Pelúcia Hello Kitty',custo:20,forn:'CX CY',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:73,nome:'Chaveiro Homem Aranha',custo:4.16,forn:'CX CY',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:74,nome:'Chaveiro Hello Kitty',custo:4.16,forn:'CX CY',shopee:15.90,ml:17.90,tiktok:7.90},
+  {id:75,nome:'Canetas apagáveis',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:76,nome:'Régua dobrável',custo:5,forn:'CX CY',shopee:17.90,ml:18.90,tiktok:8.90},
+  {id:77,nome:'Caderno Hello Kitty argolado',custo:20,forn:'Papelaria Dani',shopee:44.90,ml:42.90,tiktok:32.90},
+  {id:78,nome:'Caneta Gatinho',custo:2.08,forn:'Papelaria Dani',shopee:12.90,ml:14.90,tiktok:4.90},
+  {id:79,nome:'Caneta Homem Aranha',custo:2.08,forn:'Papelaria Dani',shopee:12.90,ml:14.90,tiktok:4.90},
+  {id:80,nome:'Estojo Hello Kitty Metalizado',custo:15,forn:'Papelaria Dani',shopee:35.90,ml:34.90,tiktok:24.90},
+  {id:81,nome:'Kit esponja com borrifador',custo:8,forn:'Cosméticos BIO',shopee:22.90,ml:23.90,tiktok:13.90},
+  {id:82,nome:'Massageador facial',custo:3,forn:'Cosméticos BIO',shopee:13.90,ml:15.90,tiktok:5.90},
+  {id:83,nome:'Necessaire',custo:6,forn:'Cosméticos BIO',shopee:19.90,ml:20.90,tiktok:10.90},
+  {id:84,nome:'Kit 5 pincéis com espelho',custo:9.98,forn:'Cosméticos BIO',shopee:26.90,ml:26.90,tiktok:16.90},
+  {id:85,nome:'Box Lip Gloss Fruta Mágica',custo:6.8,forn:'Cosméticos BIO',shopee:20.90,ml:21.90,tiktok:11.90},
+];
+
+const DIAG_BASE=[
+  {id:1,nome:'Presilha Pelúcia Hello Kitty e Amigos',preco:18.84,custo:4.5},
+  {id:2,nome:'Tiara Brasil Copa Verde e Amarela',preco:16.76,custo:3},
+  {id:3,nome:'Kit 5 Canetas HK Ponta Fina (turma)',preco:14.63,custo:8},
+  {id:4,nome:'Kit 5 Canetas Hello Kitty Ponta Fina',preco:20.04,custo:8},
+  {id:5,nome:'Kit Caneta Tinta Preta + Chaveiro HK',preco:18.24,custo:5},
+  {id:6,nome:'Lápis Infinito Hello Kitty c/ Borracha',preco:14.66,custo:4},
+  {id:7,nome:'Presilha de Cabelo de Pelúcia',preco:15.57,custo:4.5},
+  {id:8,nome:'Cola Bastão Hello Kitty Escolar',preco:18.24,custo:6},
+  {id:9,nome:'Kit Kuromi 2 Itens – Caderno Inteligente',preco:84.92,custo:28},
+  {id:10,nome:'Kit Presilhas Estrela 10 Unidades',preco:14.95,custo:5},
+  {id:11,nome:'Kit Hello Kitty Caneta + Chaveiro',preco:21.95,custo:6},
+  {id:12,nome:'Kit 4 Canetas Naruto Equipe 7',preco:12.26,custo:4},
+  {id:13,nome:'Caderno Inteligente A5 Lilás',preco:29.95,custo:20},
+  {id:14,nome:'Kit Hello Kitty Agenda A5 Pelúcia + Caneta',preco:48.52,custo:20},
+  {id:15,nome:'Presilha Bico de Pato Festa Junina',preco:11.96,custo:3},
+  {id:16,nome:'Kit Gatinho Premium Kawaii 4 em 1',preco:25.95,custo:10},
+  {id:17,nome:'KIT 5 Pincéis de Maquiagem + Estojo',preco:19.95,custo:9.98},
+  {id:18,nome:'Mini Bloquinho de Anotações Kuromi',preco:17.96,custo:6},
+  {id:19,nome:'Caneta Gatinho Transparente Tinta Preta',preco:10.78,custo:1.6},
+  {id:20,nome:'Kit 4 Canetas 2 em 1 Hello Kitty Azul',preco:34.44,custo:12},
+  {id:21,nome:'Lip Gloss Frutas Mágicas Amor Anjo',preco:17.94,custo:6.8},
+  {id:22,nome:'Necessaire Transparente',preco:18.89,custo:6},
+  {id:23,nome:'Kit Panda Fofo 3 Canetas + Apontador',preco:49.54,custo:12},
+  {id:24,nome:'Estojo Metalizado Hello Kitty + Chaveiro',preco:37.46,custo:15},
+  {id:25,nome:'Kit Papelaria Fofa Sanrio Caneta Preta',preco:19.44,custo:8},
+  {id:26,nome:'Kit Hello Kitty Caneta 10 Cores + Chaveiro',preco:19.44,custo:8},
+  {id:27,nome:'Marcadores Hello Kitty 2 em 1',preco:14.25,custo:6},
+  {id:28,nome:'Post-it Kuromi Bloco de Notas Adesivo',preco:13.46,custo:5},
+  {id:29,nome:'Apontador Kuromi Papelaria Fofa',preco:19.74,custo:5},
+  {id:30,nome:'Kit 4 Lápis Infinito Hello Kitty c/ Borracha',preco:21.95,custo:16},
+];
+
+// ══════════════════════════════════════════
+// STATE — localStorage
+// ══════════════════════════════════════════
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+let prods=ld('cp4_prods',BASE.map(p=>({...p})));
+let est=ld('cp4_est',BASE.map(p=>({id:p.id,qtd:10,min:3,qtdC:10,ultPreco:p.custo})));
+let diags=ld('cp4_diag',DIAG_BASE.map(d=>({...d})));
+let nxId=Math.max(...prods.map(p=>p.id))+1;
+let nxDid=Math.max(...diags.map(d=>d.id))+1;
+
+function svP(){sv('cp4_prods',prods);buildSel()}
+function svE(){sv('cp4_est',est);hdrBadges()}
+function svD(){sv('cp4_diag',diags);hdrBadges()}
+
+// Sincronizar estoque
+prods.forEach(p=>{if(!est.find(e=>e.id===p.id))est.push({id:p.id,qtd:0,min:3,qtdC:10,ultPreco:p.custo})});
+svE();
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+const R=(v,d=2)=>Number(v.toFixed(d));
+function fm(v){return'R$'+Math.abs(v).toFixed(2).replace('.',',')}
+function pc(v){return v.toFixed(1).replace('.',',')+'%'}
+function gE(id){return est.find(e=>e.id===id)||{qtd:0,min:3,qtdC:10,ultPreco:0}}
+function lS(p,c){return p-p*CFG-TS-c-EMB-p*ADS_DEF}
+function mS(p,c){return lS(p,c)/p*100}
+function mML(p,c){return p?(p-p*CML_C-6.25-c-EMB-p*ADS_DEF)/p*100:null}
+function mTT(p,c){return p?(p-p*CTT-c-EMB-p*ADS_DEF)/p*100:null}
+function pMin(c,m=0.15,com=CFG,tx=TS){const cf=1-com-ADS_DEF-m;return cf>0?Math.ceil(((tx+c+EMB)/cf)/0.9)*0.9:0}
+function cat(m){return m>=15?'ok':m>=0?'low':'prej'}
+function clr(m){return m>=15?'var(--gr)':m>=0?'var(--yl)':'var(--rd)'}
+function barH(m,max=40){return Math.min(Math.max(m,0),max)/max*100}
+function mCls(m){return m>=15?'g':m>=0?'y':'r'}
+
+// ══════════════════════════════════════════
+// NAVEGAÇÃO
+// ══════════════════════════════════════════
+function go(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('on');
+  if(btn) btn.classList.add('active');
+  const map=['dashboard','calc','catalogo','estoque','compras','diag','comparar','estrategia'];
+  const i=map.indexOf(id);
+  if(i>=0) document.querySelectorAll('.tab')[i].classList.add('active');
+  ({dashboard:renderDB,catalogo:renderCat,estoque:renderEst,compras:renderComp,diag:renderDiag,comparar:calcCmp})[id]?.();
+}
+
+function togAdd(id){const el=document.getElementById(id);el.style.display=el.style.display==='block'?'none':'block'}
+
+// ══════════════════════════════════════════
+// HEADER BADGES
+// ══════════════════════════════════════════
+function hdrBadges(){
+  const zero=est.filter(e=>e.qtd===0).length;
+  const prej=diags.filter(d=>{const l=d.preco-d.preco*CFG-TS-d.custo-EMB-d.preco*ADS_DEF;return l/d.preco*100<0}).length;
+  document.getElementById('hdrRight').innerHTML=
+    (zero?`<span class="hbadge warn" onclick="go('compras',document.querySelector('.tab:nth-child(5)'))">📦 ${zero} sem estoque</span>`:'')
+    +(prej?`<span class="hbadge warn" onclick="go('diag',document.querySelector('.tab:nth-child(6)'))">⚠️ ${prej} com prejuízo</span>`:'')
+    +(!zero&&!prej?'<span class="hbadge ok">Tudo ok ✓</span>':'');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function renderDB(){
+  const zero=est.filter(e=>e.qtd===0).length;
+  const crit=est.filter(e=>e.qtd>0&&e.qtd<=e.min).length;
+  const prej=diags.filter(d=>cat(d.preco>0?(d.preco-d.preco*CFG-TS-d.custo-EMB-d.preco*ADS_DEF)/d.preco*100:0)==='prej').length;
+
+  document.getElementById('dKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Produtos</div><div class="kpi-v">${prods.length}</div></div>
+    <div class="kpi"><div class="kpi-l">Sem estoque</div><div class="kpi-v r">${zero}</div></div>
+    <div class="kpi"><div class="kpi-l">Estoque crítico</div><div class="kpi-v y">${crit}</div></div>
+    <div class="kpi"><div class="kpi-l">Com prejuízo</div><div class="kpi-v r">${prej}</div></div>
+    <div class="kpi"><div class="kpi-l">ROAS Shopee</div><div class="kpi-v o">9,65</div></div>
+    <div class="kpi"><div class="kpi-l">Vendas/mês</div><div class="kpi-v g">R$3k</div></div>`;
+
+  const prejProds=diags.filter(d=>{const l=d.preco-d.preco*CFG-TS-d.custo-EMB-d.preco*ADS_DEF;return l<0});
+  document.getElementById('dPrej').innerHTML=prejProds.length
+    ?prejProds.map(d=>{const l=d.preco-d.preco*CFG-TS-d.custo-EMB-d.preco*ADS_DEF;const pc2=pMin(d.custo);return`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br);font-size:13px;flex-wrap:wrap;gap:6px">
+      <span style="font-weight:500">${d.nome}</span>
+      <span style="display:flex;gap:8px;align-items:center">
+        <span style="color:var(--rd);font-weight:500">${fm(l)}/venda</span>
+        <span style="color:var(--gr);font-size:12px">→ correto: ${fm(pc2)}</span>
+      </span>
+    </div>`}).join('')
+    :'<div style="color:var(--gr);padding:.5rem;font-size:13px">Nenhum produto com prejuízo. ✓</div>';
+
+  const critProds=prods.filter(p=>{const e=gE(p.id);return e.qtd===0||e.qtd<=e.min}).slice(0,8);
+  document.getElementById('dEst').innerHTML=critProds.length
+    ?critProds.map(p=>{const e=gE(p.id);return`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--br);font-size:13px;flex-wrap:wrap;gap:6px">
+      <span style="font-weight:500">${p.nome}</span>
+      <span style="display:flex;gap:6px;align-items:center">
+        ${e.qtd===0?'<span class="badge br">Sem estoque</span>':'<span class="badge by">Crítico</span>'}
+        <span style="color:var(--mu);font-size:12px">${e.qtd} un. · comprar ${e.qtdC}</span>
+      </span>
+    </div>`}).join('')
+    :'<div style="color:var(--gr);padding:.5rem;font-size:13px">Estoque em dia! ✓</div>';
+
+  const top=[...prods].filter(p=>p.shopee).map(p=>({...p,m:mS(p.shopee,p.custo)})).sort((a,b)=>b.m-a.m).slice(0,8);
+  document.getElementById('dTop').innerHTML=`<div class="tw"><table style="font-size:13px">
+    <thead><tr><th>Produto</th><th>Custo</th><th>Preço Shopee</th><th>Lucro/pedido</th><th>Margem</th></tr></thead>
+    <tbody>${top.map(p=>{const l=lS(p.shopee,p.custo);return`
+    <tr><td style="font-weight:500">${p.nome}</td><td>${fm(p.custo)}</td><td>${fm(p.shopee)}</td>
+    <td style="color:${clr(p.m)};font-weight:500">${fm(l)}</td>
+    <td style="color:${clr(p.m)};font-weight:500">${pc(p.m)}</td></tr>`}).join('')}
+    </tbody></table></div>`;
+}
+
+// ══════════════════════════════════════════
+// CALCULADORA
+// ══════════════════════════════════════════
+let platC='shopee',freteO='gratis',anuncioO='classico',adsR=10;
+
+function setPlat(p,btn){
+  platC=p;
+  document.querySelectorAll('.tog-g:first-of-type .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('fAnuncio').style.display=p==='ml'?'block':'none';
+  document.getElementById('fFreteField').style.display=p==='tiktok'?'none':'block';
+  buildSel(); calc();
+}
+function setOpt(t,v,btn){
+  if(t==='frete')freteO=v;else anuncioO=v;
+  btn.closest('.tog-g').querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');calc();
+}
+function setAds(v,btn){
+  adsR=v;
+  document.querySelectorAll('#togAds .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');calc();
+}
+function buildSel(){
+  const sel=document.getElementById('cSel');
+  const v=sel.value;
+  sel.innerHTML='<option value="">— selecionar —</option>';
+  const g={};prods.forEach(p=>{if(!g[p.forn])g[p.forn]=[];g[p.forn].push(p)});
+  Object.entries(g).forEach(([f,ps])=>{
+    const og=document.createElement('optgroup');og.label=f;
+    ps.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=`${p.nome} — ${fm(p.custo)}`;og.appendChild(o)});
+    sel.appendChild(og);
+  });
+  sel.value=v;
+}
+function loadProd(){
+  const id=parseInt(document.getElementById('cSel').value);
+  const p=prods.find(x=>x.id===id);if(!p)return;
+  document.getElementById('cCusto').value=p.custo;
+  document.getElementById('cPreco').value={shopee:p.shopee,ml:p.ml,tiktok:p.tiktok}[platC]||p.shopee;
+  calc();
+}
+function calc(){
+  const custo=parseFloat(document.getElementById('cCusto').value)||0;
+  const preco=parseFloat(document.getElementById('cPreco').value)||0;
+  const emb=parseFloat(document.getElementById('cEmb').value)||0.5;
+  const mT=parseInt(document.getElementById('mSlider').value)||15;
+  const ads=adsR/100;
+  const c=custo||5;
+
+  // Sugestões automáticas (atualizam com custo)
+  document.getElementById('cSug').innerHTML=`
+    <div class="g3" style="margin-bottom:.5rem">
+      <div class="met"><div class="met-l">🛍️ Shopee (frete grátis)</div><div class="met-v" style="color:var(--or)">${fm(pMin(c,mT/100,CFG,TS))}</div></div>
+      <div class="met"><div class="met-l">🛒 ML Clássico</div><div class="met-v" style="color:var(--bl)">${fm(pMin(c,mT/100,CML_C,6.25))}</div></div>
+      <div class="met"><div class="met-l">🎵 TikTok</div><div class="met-v" style="color:#7F77DD">${fm(pMin(c,mT/100,CTT,0))}</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--mu)">Custo ${fm(c)} · emb ${fm(emb)} · ads ${adsR}% · margem alvo ${mT}%</div>`;
+
+  if(!preco||!custo){document.getElementById('cRes').innerHTML='<div style="color:var(--mu);text-align:center;padding:2rem;font-size:13px">Preencha custo e preço de venda.</div>';return}
+
+  let com,taxa,lbl;
+  if(platC==='shopee'){com=freteO==='gratis'?CFG:CSG;taxa=TS;lbl='Shopee '+(freteO==='gratis'?'(frete grátis)':'(sem frete grátis)')}
+  else if(platC==='ml'){com=anuncioO==='classico'?CML_C:CML_P;taxa=preco<=29?6.25:preco<=50?6.50:6.75;lbl='ML '+(anuncioO==='classico'?'Clássico':'Premium')}
+  else{com=CTT;taxa=0;lbl='TikTok Shop'}
+
+  const comV=preco*com,adsV=preco*ads;
+  const lucro=preco-comV-taxa-custo-emb-adsV;
+  const marg=lucro/preco*100;
+  const mc=mCls(marg);
+  const cf=1-com-ads-(mT/100);
+  const pm=cf>0?(taxa+custo+emb)/cf:0;
+  const bdg=marg>=mT?'<span class="badge bg2">Meta atingida ✓</span>':marg>=0?'<span class="badge by">Abaixo da meta</span>':'<span class="badge br">Prejuízo !</span>';
+
+  document.getElementById('cRes').innerHTML=`
+    <div class="res-box">
+      <div class="rrow"><span class="rl">Preço de venda</span><span class="rv">${fm(preco)}</span></div>
+      <div class="rrow"><span class="rl">Comissão ${lbl} (${pc(com*100)})</span><span class="rv r">− ${fm(comV)}</span></div>
+      <div class="rrow"><span class="rl">Taxa fixa plataforma</span><span class="rv r">− ${fm(taxa)}</span></div>
+      <div class="rrow"><span class="rl">Custo produto</span><span class="rv r">− ${fm(custo)}</span></div>
+      <div class="rrow"><span class="rl">Embalagem</span><span class="rv r">− ${fm(emb)}</span></div>
+      ${adsR>0?`<div class="rrow"><span class="rl">Ads (${adsR}%)</span><span class="rv r">− ${fm(adsV)}</span></div>`:''}
+      <div class="rrow"><span class="rl">Lucro líquido &nbsp;${bdg}</span><span class="rv ${mc}">${fm(lucro)}</span></div>
+    </div>
+    <div class="met-row">
+      <div class="met"><div class="met-l">Lucro/pedido</div><div class="met-v ${mc}">${fm(lucro)}</div></div>
+      <div class="met"><div class="met-l">Margem líquida</div><div class="met-v ${mc}">${pc(marg)}</div></div>
+      <div class="met"><div class="met-l">Total descontado</div><div class="met-v">${fm(comV+taxa+emb+adsV)}</div></div>
+    </div>
+    ${marg<mT&&pm>0?`<div class="tip">Para <strong>${mT}% de margem</strong> com este custo, o preço mínimo é <strong>${fm(pm)}</strong> no ${lbl}.</div>`:''}`;
+}
+
+// ══════════════════════════════════════════
+// CATÁLOGO — edição inline em tempo real
+// ══════════════════════════════════════════
+function renderCat(){
+  const q=(document.getElementById('catQ').value||'').toLowerCase();
+  const fil=q?prods.filter(p=>p.nome.toLowerCase().includes(q)||p.forn.toLowerCase().includes(q)):prods;
+  document.getElementById('catCount').textContent=`${fil.length} de ${prods.length} produtos`;
+
+  document.getElementById('catBody').innerHTML=fil.map(p=>{
+    const ms=mS(p.shopee,p.custo),mml=mML(p.ml,p.custo),mtt=mTT(p.tiktok,p.custo);
+    return`<tr id="cr${p.id}">
+      <td><input type="text" value="${p.nome}" title="${p.nome}" style="font-weight:500;min-width:160px"
+        onchange="upP(${p.id},'nome',this.value)"></td>
+      <td><input type="text" value="${p.forn}" style="min-width:90px"
+        onchange="upP(${p.id},'forn',this.value)"></td>
+      <td><input type="number" value="${p.custo}" step="0.01" min="0" style="width:75px"
+        oninput="upP(${p.id},'custo',+this.value)"></td>
+      <td><input type="number" value="${p.shopee}" step="0.01" min="0" style="width:80px"
+        oninput="upP(${p.id},'shopee',+this.value)"></td>
+      <td id="ms${p.id}" style="color:${clr(ms)};font-weight:500;white-space:nowrap">${pc(ms)}</td>
+      <td><input type="number" value="${p.ml}" step="0.01" min="0" style="width:80px"
+        oninput="upP(${p.id},'ml',+this.value)"></td>
+      <td id="mml${p.id}" style="color:${mml!==null?clr(mml):'var(--mu)'};font-weight:500;white-space:nowrap">${mml!==null?pc(mml):'—'}</td>
+      <td><input type="number" value="${p.tiktok}" step="0.01" min="0" style="width:80px"
+        oninput="upP(${p.id},'tiktok',+this.value)"></td>
+      <td id="mtt${p.id}" style="color:${mtt!==null?clr(mtt):'var(--mu)'};font-weight:500;white-space:nowrap">${mtt!==null?pc(mtt):'—'}</td>
+      <td><button class="btn bd bsm" onclick="delP(${p.id})">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// Atualiza campo e recalcula margens na linha sem re-renderizar tudo
+function upP(id,campo,val){
+  const p=prods.find(x=>x.id===id);if(!p)return;
+  p[campo]=val;svP();
+  // Atualizar só as células de margem da linha
+  if(['custo','shopee','ml','tiktok'].includes(campo)){
+    const ms=document.getElementById(`ms${id}`);
+    const mml2=document.getElementById(`mml${id}`);
+    const mtt2=document.getElementById(`mtt${id}`);
+    if(ms){const v=mS(p.shopee,p.custo);ms.textContent=pc(v);ms.style.color=clr(v)}
+    if(mml2){const v=mML(p.ml,p.custo);mml2.textContent=v!==null?pc(v):'—';mml2.style.color=v!==null?clr(v):'var(--mu)'}
+    if(mtt2){const v=mTT(p.tiktok,p.custo);mtt2.textContent=v!==null?pc(v):'—';mtt2.style.color=v!==null?clr(v):'var(--mu)'}
+    const e=gE(id);if(campo==='custo')e.ultPreco=val;svE();
+  }
+  hdrBadges();
+}
+
+function autoPrecos(){
+  const c=parseFloat(document.getElementById('aCusto').value)||0;
+  if(!c)return;
+  if(!document.getElementById('aShopee').value)document.getElementById('aShopee').value=pMin(c).toFixed(2);
+  if(!document.getElementById('aML').value)document.getElementById('aML').value=pMin(c,0.15,CML_C,6.25).toFixed(2);
+  if(!document.getElementById('aTT').value)document.getElementById('aTT').value=pMin(c,0.15,CTT,0).toFixed(2);
+}
+function addProd(){
+  const nome=document.getElementById('aNome').value.trim();
+  const custo=parseFloat(document.getElementById('aCusto').value)||0;
+  if(!nome||!custo){alert('Preencha nome e custo.');return}
+  const forn=document.getElementById('aForn').value.trim()||'Sem fornecedor';
+  const shopee=parseFloat(document.getElementById('aShopee').value)||pMin(custo);
+  const ml=parseFloat(document.getElementById('aML').value)||pMin(custo,0.15,CML_C,6.25);
+  const tiktok=parseFloat(document.getElementById('aTT').value)||pMin(custo,0.15,CTT,0);
+  const p={id:nxId++,nome,custo,forn,shopee,ml,tiktok};
+  prods.push(p);est.push({id:p.id,qtd:0,min:3,qtdC:10,ultPreco:custo});
+  svP();svE();renderCat();togAdd('catAdd');
+  ['aNome','aCusto','aForn','aShopee','aML','aTT'].forEach(i=>document.getElementById(i).value='');
+}
+function delP(id){if(!confirm('Excluir produto?'))return;prods=prods.filter(p=>p.id!==id);est=est.filter(e=>e.id!==id);svP();svE();renderCat()}
+function expCSV(){
+  let c='Nome,Fornecedor,Custo,Shopee,Margem Shopee,ML,TikTok\n';
+  prods.forEach(p=>c+=`"${p.nome}","${p.forn}",${p.custo},${p.shopee},${pc(mS(p.shopee,p.custo))},${p.ml},${p.tiktok}\n`);
+  dl('catalogo.csv','data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(c));
+}
+function resetPrecos(){
+  if(!confirm('Restaurar preços calculados com 15% de margem?'))return;
+  BASE.forEach(b=>{const p=prods.find(x=>x.id===b.id);if(p){p.shopee=b.shopee;p.ml=b.ml;p.tiktok=b.tiktok;p.custo=b.custo}});
+  svP();renderCat();
+}
+
+// ══════════════════════════════════════════
+// ESTOQUE — edição inline em tempo real
+// ══════════════════════════════════════════
+function renderEst(){
+  const q=(document.getElementById('estQ').value||'').toLowerCase();
+  const fil=prods.filter(p=>!q||p.nome.toLowerCase().includes(q)||p.forn.toLowerCase().includes(q));
+  const zero=est.filter(e=>e.qtd===0).length;
+  const crit=est.filter(e=>e.qtd>0&&e.qtd<=e.min).length;
+  const ok2=est.filter(e=>e.qtd>e.min).length;
+  const totalProj=est.reduce((s,e)=>s+(e.qtd<=e.min?e.qtdC*e.ultPreco:0),0);
+
+  document.getElementById('estKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Sem estoque</div><div class="kpi-v r">${zero}</div></div>
+    <div class="kpi"><div class="kpi-l">Estoque crítico</div><div class="kpi-v y">${crit}</div></div>
+    <div class="kpi"><div class="kpi-l">Estoque ok</div><div class="kpi-v g">${ok2}</div></div>
+    <div class="kpi"><div class="kpi-l">Gasto p/ repor tudo</div><div class="kpi-v o">${fm(totalProj)}</div></div>`;
+
+  document.getElementById('estBody').innerHTML=fil.map(p=>{
+    const e=gE(p.id);
+    const st=e.qtd===0?'<span class="badge br">Sem estoque</span>':e.qtd<=e.min?'<span class="badge by">Crítico</span>':'<span class="badge bg2">OK</span>';
+    const proj=e.qtdC*e.ultPreco;
+    return`<tr>
+      <td style="font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
+      <td style="font-size:12px;color:var(--mu)">${p.forn}</td>
+      <td style="color:var(--mu);font-size:12px">${fm(p.custo)}</td>
+      <td><input type="number" value="${e.qtd}" min="0" step="1" style="width:65px"
+        title="Quantidade que você tem agora"
+        oninput="upE(${p.id},'qtd',+this.value)"></td>
+      <td><input type="number" value="${e.min}" min="0" step="1" style="width:65px"
+        title="Abaixo disso o status fica crítico"
+        oninput="upE(${p.id},'min',+this.value)"></td>
+      <td><input type="number" value="${e.qtdC}" min="0" step="1" style="width:65px"
+        title="Quantidade ideal para comprar de uma vez"
+        oninput="upE(${p.id},'qtdC',+this.value)"></td>
+      <td><input type="number" value="${e.ultPreco}" min="0" step="0.01" style="width:80px"
+        title="Último preço pago ao fornecedor por unidade"
+        oninput="upE(${p.id},'ultPreco',+this.value)"></td>
+      <td id="ep${p.id}" style="font-weight:600;color:var(--or)">${fm(proj)}</td>
+      <td id="es${p.id}">${st}</td>
+    </tr>`;
+  }).join('');
+}
+
+function upE(id,campo,val){
+  const e=est.find(x=>x.id===id);if(!e)return;
+  e[campo]=val;svE();
+  // Atualiza só a linha afetada
+  const proj=document.getElementById(`ep${id}`);
+  const st=document.getElementById(`es${id}`);
+  if(proj)proj.textContent=fm(e.qtdC*e.ultPreco);
+  if(st){
+    st.innerHTML=e.qtd===0?'<span class="badge br">Sem estoque</span>':e.qtd<=e.min?'<span class="badge by">Crítico</span>':'<span class="badge bg2">OK</span>';
+  }
+  // Atualizar KPIs
+  const zero=est.filter(x=>x.qtd===0).length;
+  const crit=est.filter(x=>x.qtd>0&&x.qtd<=x.min).length;
+  const ok2=est.filter(x=>x.qtd>x.min).length;
+  const totalProj=est.reduce((s,x)=>s+(x.qtd<=x.min?x.qtdC*x.ultPreco:0),0);
+  document.getElementById('estKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Sem estoque</div><div class="kpi-v r">${zero}</div></div>
+    <div class="kpi"><div class="kpi-l">Estoque crítico</div><div class="kpi-v y">${crit}</div></div>
+    <div class="kpi"><div class="kpi-l">Estoque ok</div><div class="kpi-v g">${ok2}</div></div>
+    <div class="kpi"><div class="kpi-l">Gasto p/ repor tudo</div><div class="kpi-v o">${fm(totalProj)}</div></div>`;
+  hdrBadges();
+}
+
+function expEstoque(){
+  let c='Produto,Fornecedor,Custo,Qtd Atual,Mínimo,Qtd Comprar,Último Preço,Projeção\n';
+  prods.forEach(p=>{const e=gE(p.id);c+=`"${p.nome}","${p.forn}",${p.custo},${e.qtd},${e.min},${e.qtdC},${e.ultPreco},${(e.qtdC*e.ultPreco).toFixed(2)}\n`});
+  dl('estoque.csv','data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(c));
+}
+
+// ══════════════════════════════════════════
+// LISTA DE COMPRAS — automática
+// ══════════════════════════════════════════
+function renderComp(){
+  const prec=prods.filter(p=>{const e=gE(p.id);return e.qtd<=e.min});
+  const urg=prec.filter(p=>gE(p.id).qtd===0).length;
+  const norm=prec.filter(p=>{const e=gE(p.id);return e.qtd>0&&e.qtd<=e.min}).length;
+  const tot=prec.reduce((s,p)=>{const e=gE(p.id);return s+e.qtdC*e.ultPreco},0);
+
+  document.getElementById('compKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Urgente (sem estoque)</div><div class="kpi-v r">${urg}</div></div>
+    <div class="kpi"><div class="kpi-l">Repor em breve</div><div class="kpi-v y">${norm}</div></div>
+    <div class="kpi"><div class="kpi-l">Total itens a comprar</div><div class="kpi-v">${prec.length}</div></div>
+    <div class="kpi"><div class="kpi-l">Gasto estimado total</div><div class="kpi-v o">${fm(tot)}</div></div>`;
+
+  if(!prec.length){document.getElementById('compList').innerHTML='<div style="text-align:center;color:var(--gr);padding:2rem;font-size:13px">Nenhum produto precisa ser reposto agora. ✓</div>';return}
+
+  const byForn={};
+  prec.forEach(p=>{if(!byForn[p.forn])byForn[p.forn]=[];byForn[p.forn].push(p)});
+
+  document.getElementById('compList').innerHTML=Object.entries(byForn).map(([forn,ps])=>{
+    const totF=ps.reduce((s,p)=>{const e=gE(p.id);return s+e.qtdC*e.ultPreco},0);
+    return`<div class="forn-block">
+      <div class="forn-hdr">
+        <div><div class="forn-title">🏪 ${forn}</div><div style="font-size:12px;color:var(--mu)">${ps.length} produto${ps.length!==1?'s':''}</div></div>
+        <div class="forn-total">${fm(totF)}</div>
+      </div>
+      ${ps.map(p=>{const e=gE(p.id);const urg2=e.qtd===0;return`
+      <div class="comp-item ${urg2?'urg':'norm'}">
+        <div>
+          ${urg2?'<span class="badge br" style="margin-right:5px;font-size:10px">URGENTE</span>':''}
+          <span class="comp-nome">${p.nome}</span>
+        </div>
+        <div class="comp-info">
+          <span>Estoque: <strong>${e.qtd} un.</strong></span>
+          <span>Comprar: <strong>${e.qtdC} un.</strong></span>
+          <span>Preço/un.: <strong>${fm(e.ultPreco)}</strong></span>
+          <span style="color:var(--or);font-weight:700">${fm(e.qtdC*e.ultPreco)}</span>
+        </div>
+      </div>`}).join('')}
+    </div>`;
+  }).join('');
+}
+
+function expCompras(){
+  const prec=prods.filter(p=>{const e=gE(p.id);return e.qtd<=e.min});
+  let c='Fornecedor,Produto,Qtd Atual,Qtd Comprar,Último Preço Un.,Total Estimado,Urgente\n';
+  prec.forEach(p=>{const e=gE(p.id);c+=`"${p.forn}","${p.nome}",${e.qtd},${e.qtdC},${e.ultPreco},${(e.qtdC*e.ultPreco).toFixed(2)},${e.qtd===0?'SIM':'NÃO'}\n`});
+  dl('lista_compras.csv','data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(c));
+}
+
+// ══════════════════════════════════════════
+// DIAGNÓSTICO — edição inline em tempo real
+// ══════════════════════════════════════════
+let diagF='all';
+
+function diagCalc(d){
+  const l=d.preco-d.preco*CFG-TS-d.custo-EMB-d.preco*ADS_DEF;
+  const m=d.preco>0?l/d.preco*100:0;
+  return{l,m,pc2:pMin(d.custo),cat:cat(m)};
+}
+
+function renderDiag(){
+  const prej=diags.filter(d=>diagCalc(d).cat==='prej').length;
+  const low=diags.filter(d=>diagCalc(d).cat==='low').length;
+  const ok2=diags.filter(d=>diagCalc(d).cat==='ok').length;
+  document.getElementById('diagKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Analisados</div><div class="kpi-v">${diags.length}</div></div>
+    <div class="kpi"><div class="kpi-l">Com prejuízo</div><div class="kpi-v r">${prej}</div></div>
+    <div class="kpi"><div class="kpi-l">Margem baixa (0–15%)</div><div class="kpi-v y">${low}</div></div>
+    <div class="kpi"><div class="kpi-l">Saudável (+15%)</div><div class="kpi-v g">${ok2}</div></div>`;
+
+  const fil=diagF==='all'?diags:diags.filter(d=>diagCalc(d).cat===diagF);
+  document.getElementById('diagBody').innerHTML=fil.length?fil.map(d=>{
+    const{l,m,pc2}=diagCalc(d);
+    const bw=barH(m);const bc=clr(m);const mc=mCls(m);
+    const diff=pc2-d.preco;
+    return`<tr id="dr${d.id}">
+      <td><input type="text" value="${d.nome}" style="font-weight:500;min-width:150px"
+        onchange="upD(${d.id},'nome',this.value)"></td>
+      <td><input type="number" value="${d.preco}" step="0.01" min="0" style="width:80px"
+        oninput="upD(${d.id},'preco',+this.value)"></td>
+      <td><input type="number" value="${d.custo}" step="0.01" min="0" style="width:70px"
+        oninput="upD(${d.id},'custo',+this.value)"></td>
+      <td id="dl${d.id}" style="color:${bc};font-weight:500">${l>=0?'+':''}${fm(l)}</td>
+      <td><div class="pct-bar"><div class="bar-bg"><div class="bar-f" id="db${d.id}" style="width:${bw}%;background:${bc}"></div></div>
+        <span id="dm${d.id}" style="font-size:12px;font-weight:500;color:${bc};min-width:42px">${pc(m)}</span></div></td>
+      <td id="ds${d.id}">${m>=15?'<span class="badge bg2">OK</span>':m>=0?'<span class="badge by">Baixa</span>':'<span class="badge br">Prejuízo</span>'}</td>
+      <td style="color:var(--gr);font-weight:500" id="dp${d.id}">${fm(pc2)}</td>
+      <td style="color:${diff>0?'var(--rd)':'var(--gr)'};font-weight:500" id="dd${d.id}">${diff>0?'+':'-'}${fm(Math.abs(diff))}</td>
+      <td><button class="btn bd bsm" onclick="delD(${d.id})">🗑</button></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="9" style="text-align:center;color:var(--mu);padding:1.5rem">Nenhum produto nesta categoria.</td></tr>';
+}
+
+// Atualiza linha do diagnóstico em tempo real
+function upD(id,campo,val){
+  const d=diags.find(x=>x.id===id);if(!d)return;
+  d[campo]=val;svD();
+  const{l,m,pc2}=diagCalc(d);
+  const bc=clr(m);const bw=barH(m);const diff=pc2-d.preco;
+  const u=k=>document.getElementById(k);
+  if(u(`dl${id}`)){u(`dl${id}`).textContent=(l>=0?'+':'')+fm(l).replace('R$','R$');u(`dl${id}`).style.color=bc}
+  if(u(`dm${id}`)){u(`dm${id}`).textContent=pc(m);u(`dm${id}`).style.color=bc}
+  if(u(`db${id}`)){u(`db${id}`).style.width=bw+'%';u(`db${id}`).style.background=bc}
+  if(u(`ds${id}`))u(`ds${id}`).innerHTML=m>=15?'<span class="badge bg2">OK</span>':m>=0?'<span class="badge by">Baixa</span>':'<span class="badge br">Prejuízo</span>';
+  if(u(`dp${id}`))u(`dp${id}`).textContent=fm(pc2);
+  if(u(`dd${id}`)){u(`dd${id}`).textContent=(diff>0?'+':'-')+fm(Math.abs(diff));u(`dd${id}`).style.color=diff>0?'var(--rd)':'var(--gr)'}
+  // Atualizar KPIs
+  const prej=diags.filter(x=>diagCalc(x).cat==='prej').length;
+  const low=diags.filter(x=>diagCalc(x).cat==='low').length;
+  const ok2=diags.filter(x=>diagCalc(x).cat==='ok').length;
+  document.getElementById('diagKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Analisados</div><div class="kpi-v">${diags.length}</div></div>
+    <div class="kpi"><div class="kpi-l">Com prejuízo</div><div class="kpi-v r">${prej}</div></div>
+    <div class="kpi"><div class="kpi-l">Margem baixa (0–15%)</div><div class="kpi-v y">${low}</div></div>
+    <div class="kpi"><div class="kpi-l">Saudável (+15%)</div><div class="kpi-v g">${ok2}</div></div>`;
+  hdrBadges();
+}
+
+function setDiagF(f,btn){
+  diagF=f;
+  document.querySelectorAll('#diagFil .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');renderDiag();
+}
+function addDiag(){
+  const nome=document.getElementById('dNome').value.trim();
+  const preco=parseFloat(document.getElementById('dPreco').value)||0;
+  const custo=parseFloat(document.getElementById('dCusto').value)||0;
+  if(!nome||!preco||!custo){alert('Preencha todos os campos.');return}
+  diags.push({id:nxDid++,nome,preco,custo});
+  svD();renderDiag();togAdd('diagAdd');
+  ['dNome','dPreco','dCusto'].forEach(i=>document.getElementById(i).value='');
+}
+function delD(id){diags=diags.filter(d=>d.id!==id);svD();renderDiag()}
+
+// ══════════════════════════════════════════
+// COMPARAR
+// ══════════════════════════════════════════
+function calcCmp(){
+  const custo=parseFloat(document.getElementById('cpCusto').value)||0;
+  const preco=parseFloat(document.getElementById('cpPreco').value)||0;
+  if(!custo||!preco){document.getElementById('cpRes').innerHTML='';return}
+  const ads=0.10,emb=0.50;
+  const plats=[
+    {n:'🛍️ Shopee (frete grátis)',com:preco*0.20,fix:4},
+    {n:'🛍️ Shopee (sem frete grátis)',com:preco*0.14,fix:4},
+    {n:'🛒 ML Clássico (11,5%)',com:preco*0.115,fix:preco<=29?6.25:preco<=50?6.50:6.75},
+    {n:'🛒 ML Premium (16,5%)',com:preco*0.165,fix:preco<=29?6.25:preco<=50?6.50:6.75},
+    {n:'🎵 TikTok Shop (12%)',com:preco*0.12,fix:0},
+  ];
+  const maxL=Math.max(...plats.map(pl=>preco-pl.com-pl.fix-custo-emb-preco*ads));
+  document.getElementById('cpRes').innerHTML=`<div class="tw"><table class="cmp">
+    <thead><tr><th style="text-align:left">Plataforma</th><th>Comissão</th><th>Taxa fixa</th><th>Ads 10%</th><th>Lucro</th><th>Margem</th></tr></thead>
+    <tbody>${plats.map(pl=>{
+      const l=preco-pl.com-pl.fix-custo-emb-preco*ads;
+      const m=l/preco*100;const best=Math.abs(l-maxL)<0.01;
+      return`<tr ${best?'style="font-weight:600"':''}><td>${pl.n}${best?' <span class="badge bg2" style="font-size:10px">Melhor</span>':''}</td>
+      <td>${fm(pl.com)}</td><td>${fm(pl.fix)}</td><td>${fm(preco*ads)}</td>
+      <td style="color:${clr(m)};font-weight:600">${fm(l)}</td>
+      <td style="color:${clr(m)};font-weight:600">${pc(m)}</td></tr>`;
+    }).join('')}</tbody>
+  </table></div>
+  <div class="tip" style="margin-top:.75rem">Venda ${fm(preco)} · custo ${fm(custo)} · embalagem R$0,50 · ads 10%</div>`;
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function dl(name,data){const a=document.createElement('a');a.href=data;a.download=name;a.click()}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildSel();
+renderDB();
+hdrBadges();
+</script>
+</body>
+</html>
